@@ -16,20 +16,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up GraalVM
-      uses: actions/setup-java@v2
+    - uses: graalvm/setup-graalvm@v1
       with:
+        java-version: '21'
         distribution: 'graalvm'
-        java-version: '21.0.0' # Use the latest version of GraalVM
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        native-image-job-reports: 'true'
 
-    - name: Install Native Image
-      run: gu install native-image
+    - name: Build TicTacToe
+      run: |
+        javac Main.java
+        native-image Main
 
-    - name: Compile Java program to native executable
-      run: native-image -cp . Main
-
-    - name: Upload native executable
-      uses: actions/upload-artifact@v2
+    - name: Upload native image
+      uses: actions/upload-artifact@v4
       with:
-        name: native-executable
-        path: Main.exe
+        name: TicTacToe
+        path: main*
